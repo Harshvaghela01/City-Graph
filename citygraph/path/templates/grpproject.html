@@ -1,0 +1,424 @@
+{% load static %}
+<!-- Rest of your HTML code -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Graph</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'path/graph.css' %}">
+</head>
+<body>
+    <div class="top">
+        <h1>City Graph</h1>
+
+        <label for="startCity">START CITY:</label>
+        <select id="startCity" class="cityinput">
+            <option value="" disabled selected>---- Select a city ----</option>
+            <option value="Ahmadabad">Ahmadabad</option>
+            <option value="Amreli">Amreli</option>
+            <option value="Anand">Anand</option>
+            <option value="Aravlli">Aravlli</option>
+            <option value="Banaskantha">Banaskantha</option>
+            <option value="Bharuch">Bharuch</option>
+            <option value="Bhavnagar">Bhavnagar</option>
+            <option value="Botad">Botad</option>
+            <option value="Chhota Udepur">Chhota Udepur</option>
+            <option value="Dahod">Dahod</option>
+            <option value="Dangs">Dangs</option>
+            <option value="Devbhumi Dwarka">Devbhumi Dwarka</option>
+            <option value="Gandhinagar">Gandhinagar</option>
+            <option value="GirSomnath">Gir Somnath</option>
+            <option value="Jamnagar">Jamnagar</option>
+            <option value="Junagadh">Junagadh</option>
+            <option value="Kachchh">Kachchh</option>
+            <option value="Kheda">Kheda</option>
+            <option value="Mahesana">Mahesana</option>
+            <option value="Mahisagar">Mahisagar</option>
+            <option value="Morbi">Morbi</option>
+            <option value="Narmada">Narmada</option>
+            <option value="Navsari">Navsari</option>
+            <option value="Panchmahals">Panchmahals</option>
+            <option value="Patan">Patan</option>
+            <option value="Porbandar">Porbandar</option>
+            <option value="Rajkot">Rajkot</option>
+            <option value="Sabarkantha">Sabarkantha</option>
+            <option value="Surat">Surat</option>
+            <option value="Surendranagar">Surendranagar</option>
+            <option value="Tapi">Tapi</option>
+            <option value="Vadodara">Vadodara</option>
+            <option value="Valsad">Valsad</option>
+            <!-- Add more cities as needed -->
+        </select>
+        <br>
+
+        <label for="endCity">END CITY:</label>
+        <select id="endCity" class="cityinput">
+            <option value="" disabled selected>---- Select a city ----</option>
+            <option value="Ahmadabad">Ahmadabad</option>
+            <option value="Amreli">Amreli</option>
+            <option value="Anand">Anand</option>
+            <option value="Aravlli">Aravlli</option>
+            <option value="Banaskantha">Banaskantha</option>
+            <option value="Bharuch">Bharuch</option>
+            <option value="Bhavnagar">Bhavnagar</option>
+            <option value="Botad">Botad</option>
+            <option value="Chhota Udepur">Chhota Udepur</option>
+            <option value="Dahod">Dahod</option>
+            <option value="Dangs">Dangs</option>
+            <option value="Devbhumi Dwarka">Devbhumi Dwarka</option>
+            <option value="Gandhinagar">Gandhinagar</option>
+            <option value="GirSomnath">Gir Somnath</option>
+            <option value="Jamnagar">Jamnagar</option>
+            <option value="Junagadh">Junagadh</option>
+            <option value="Kachchh">Kachchh</option>
+            <option value="Kheda">Kheda</option>
+            <option value="Mahesana">Mahesana</option>
+            <option value="Mahisagar">Mahisagar</option>
+            <option value="Morbi">Morbi</option>
+            <option value="Narmada">Narmada</option>
+            <option value="Navsari">Navsari</option>
+            <option value="Panchmahals">Panchmahals</option>
+            <option value="Patan">Patan</option>
+            <option value="Porbandar">Porbandar</option>
+            <option value="Rajkot">Rajkot</option>
+            <option value="Sabarkantha">Sabarkantha</option>
+            <option value="Surat">Surat</option>
+            <option value="Surendranagar">Surendranagar</option>
+            <option value="Tapi">Tapi</option>
+            <option value="Vadodara">Vadodara</option>
+            <option value="Valsad">Valsad</option>
+            <!-- Add more cities as needed -->
+        </select>
+        <br><br>
+
+        <button onclick="findShortestPath()">Find Path</button>
+    </div>
+
+    <p id="result"></p>
+
+    <script>
+        // Sample city graph data
+        const cityGraph = {
+            "Ahmadabad":{"Amreli":"250.2","Anand":"76.5","Aravalli":"351.3","Banaskantha":"162.5","Bharuch":"191.4",
+               "Bhavnagar":"173.8","Botad":"151.1","ChhotaUdepur":"210.7","Dahod":"203.1","Dangs":"372",
+               "DevbhumiDwarka":"397.1","Gandhinagar":"27.8","GirSomnath":"395.5","Jamnagar":"304.7","Junagadh":"316.5",
+               "Kachchh":"399.4","Kheda":"37.6","Mehsana":"75","Mahisagar":"123.2","Morbi":"221.7","Narmada":"199.6",
+               "Navsari":"281.6","Panchmahal":"123.6","Patan":"128.6","Porbandar":"394","Rajkot":"214.5","Sabarkantha":"112",
+               "Surat":"266.8","Surendranagar":"127.2","Tapi":"360.8","Vadodara":"110.7","Valsad":"335.5"},
+
+            "Amreli":{"Ahmedabad":"250.2","Anand":"258","Aravalli":"596.8","Banaskantha":"402.6","Bharuch":"381",
+               "Bhavnagar":"118.7","Botad":"92.7","ChhotaUdepur":"400.3","Dahod":"437.3","Dangs":"561.6",
+               "DevbhumiDwarka":"293.3","Gandhinagar":"273.1","GirSomnath":"128.7","Jamnagar":"201.7","Junagadh":"96.2",
+               "Kachchh":"407.7","Kheda":"239.2","Mehsana":"312.3","Mahisagar":"356.1","Morbi":"173.5","Narmada":"389.2",
+               "Navsari":"471.2","Panchmahal":"359.5","Patan":"352.3","Porbandar":"190","Rajkot":"110.9","Sabarkantha":"357.6",
+               "Surat":"263.3","Surendranagar":"183.9","Tapi":"550.4","Vadodara":"296.7","Valsad":"525.1"},
+    
+            "Anand":{"Ahmedabad":"71.8","Amreli":"258","Aravalli":"413.8","Banaskantha":"290.8","Bharuch":"130.9",
+               "Bhavnagar":"164.7","Botad":"167.6","ChhotaUdepur":"150.1","Dahod":"162","Dangs":"311.4",
+               "DevbhumiDwarka":"477.6","Gandhinagar":"103.8","GirSomnath":"386.4","Jamnagar":"333.5","Junagadh":"345.3",
+               "Kachchh":"469.7","Kheda":"39.6","Mehsana":"152.9","Mahisagar":"112.6","Morbi":"264.5","Narmada":"496.3",
+               "Navsari":"221","Panchmahal":"82.4","Patan":"206.4","Porbandar":"422.9","Rajkot":"243.3","Sabarkantha":"174.5",
+               "Surat":"206.2","Surendranagar":"156","Tapi":"240.6","Vadodara":"46.5","Valsad":"274.9"},
+        
+            "Aravalli":{"Ahmedabad":"138.2","Amreli":"375.2","Anand":"134.5","Banaskantha":"183.9","Bharuch":"266",
+               "Bhavnagar":"298.7","Botad":"276","ChhotaUdepur":"194.3","Dahod":"177.3","Dangs":"446.6",
+               "DevbhumiDwarka":"511.1","Gandhinagar":"121.2","GirSomnath":"520.4","Jamnagar":"429.6","Junagadh":"441.4",
+               "Kachchh":"440","Kheda":"132.6","Mehsana":"129.1","Mahisagar":"65.5","Morbi":"343.5","Narmada":"253",
+               "Navsari":"356.1","Panchmahal":"109.9","Patan":"171.3","Porbandar":"519","Rajkot":"339.4","Sabarkantha":"79.9",
+               "Surat":"341.4","Surendranagar":"242.4","Tapi":"367.6","Vadodara":"189.3","Valsad":"410"},
+    
+            "Banaskantha":{"Ahmedabad":"217","Amreli":"396.8","Anand":"291.2","Aravalli":"183.9","Bharuch":"406.1",
+                "Bhavnagar":"354.4","Botad":"304.3","ChhotaUdepur":"425.3","Dahod":"407.1","Dangs":"586.6",
+                "DevbhumiDwarka":"512.4","Gandhinagar":"205.1","GirSomnath":"563","Jamnagar":"368.4","Junagadh":"426.3",
+                "Kachchh":"291.3","Kheda":"254","Mehsana":"142.5","Mahisagar":"295.3","Morbi":"274","Narmada":"745.8",
+                "Navsari":"496.2","Panchmahal":"331.9","Patan":"84.1","Porbandar":"485","Rajkot":"324.3","Sabarkantha":"178.5",
+                "Surat":"481.4","Surendranagar":"220.6","Tapi":"575.4","Vadodara":"325.4","Valsad":"550.1"},
+
+            "Bharuch":{"Ahmedabad":"191.6","Amreli":"381","Anand":"130.9","Aravalli":"266","Banaskantha":"406.1",
+                "Bhavnagar":"287.6","Botad":"290.5","ChhotaUdepur":"156.7","Dahod":"227.3","Dangs":"181.1",
+                "DevbhumiDwarka":"600.4","Gandhinagar":"213.5","GirSomnath":"509.3","Jamnagar":"456.4","Junagadh":"468.2",
+                "Kachchh":"588.6","Kheda":"162.4","Mehsana":"266.3","Mahisagar":"208","Morbi":"387.3","Narmada":"74.1",
+                "Navsari":"90.7","Panchmahal":"160.9","Patan":"319.8","Porbandar":"545.7","Rajkot":"366.1","Sabarkantha":"290.7",
+                "Surat":"75.9","Surendranagar":"278.9","Tapi":"110.3","Vadodara":"78.9","Valsad":"144.6"},
+    
+            "Bhavnagar":{"Ahmedabad":"173.8","Amreli":"118.7","Anand":"130.9","Aravalli":"298.7","Banaskantha":"354.4",
+               "Bharuch":"287.6","Botad":"100.8","ChhotaUdepur":"306.9","Dahod":"344","Dangs":"270.7",
+               "DevbhumiDwarka":"357.2","Gandhinagar":"196.5","GirSomnath":"226.2","Jamnagar":"264.8","Junagadh":"208.4",
+               "Kachchh":"472.2","Kheda":"156.3","Mehsana":"243.3","Mahisagar":"273.8","Morbi":"236.6","Narmada":"295.9",
+               "Navsari":"123","Panchmahal":"263.4","Patan":"273","Porbandar":"289.5","Rajkot":"174","Sabarkantha":"288.5",
+               "Surat":"148","Surendranagar":"153.2","Tapi":"246.8","Vadodara":"203.4","Valsad":"234.2"},
+    
+            "Botad":{"Ahmedabad":"151.1","Amreli":"92.7","Anand":"167.9","Aravalli":"276","Banaskantha":"304.3",
+               "Bharuch":"290.5","Bhavnagar":"100.8","ChhotaUdepur":"309.7","Dahod":"346.8","Dangs":"471.1",
+               "DevbhumiDwarka":"355.2","Gandhinagar":"173.6","GirSomnath":"221.6","Jamnagar":"207.9","Junagadh":"174.3",
+               "Kachchh":"374.5","Kheda":"147.2","Mehsana":"220.4","Mahisagar":"264.2","Morbi":"138.9","Narmada":"298.7",
+               "Navsari":"380.6","Panchmahal":"266.2","Patan":"243.9","Porbandar":"251.9","Rajkot":"122.8","Sabarkantha":"265.6",
+               "Surat":"365.9","Surendranagar":"87.3","Tapi":"459.8","Vadodara":"206.2","Valsad":"434.5"},
+    
+            "ChhotaUdepur":{"Ahmedabad":"210.7","Amreli":"400.3","Anand":"150.1","Aravalli":"194.3","Banaskantha":"425.3",
+               "Bharuch":"156.7","Bhavnagar":"306.9","Botad":"309.7","Dahod":"91.1","Dangs":"270.1",
+               "DevbhumiDwarka":"567.4","Gandhinagar":"235.7","GirSomnath":"527.8","Jamnagar":"474.9","Junagadh":"486.7",
+               "Kachchh":"607.1","Kheda":"184.7","Mehsana":"288.5","Mahisagar":"138.5","Morbi":"405.9","Narmada":"96.4",
+               "Navsari":"251.3","Panchmahal":"100.8","Patan":"338.4","Porbandar":"564.3","Rajkot":"384.7","Sabarkantha":"259.1",
+               "Surat":"236.5","Surendranagar":"301.1","Tapi":"330.4","Vadodara":"106.1","Valsad":"305.1"},
+    
+            "Dahod":{"Ahmedabad":"203.1","Amreli":"437.3","Anand":"162","Aravalli":"177.3","Banaskantha":"407.1",
+               "Bharuch":"227.3","Bhavnagar":"344","Botad":"346.8","ChhotaUdepur":"91.1","Dangs":"353.1",
+               "DevbhumiDwarka":"657.1","Gandhinagar":"216.4","GirSomnath":"566","Jamnagar":"496.3","Junagadh":"508.1",
+               "Kachchh":"583.2","Kheda":"191.5","Mehsana":"269.2","Mahisagar":"120","Morbi":"427.3","Narmada":"179.5",
+               "Navsari":"317.6","Panchmahal":"70.7","Patan":"322.8","Porbandar":"585.7","Rajkot":"406.1","Sabarkantha":"240.6",
+               "Surat":"302.9","Surendranagar":"335.6","Tapi":"294.1","Vadodara":"150.8","Valsad":"371.5"},
+    
+            "Dangs":{"Ahmedabad":"372","Amreli":"561.6","Anand":"311.4","Aravalli":"710.7","Banaskantha":"587.8",
+               "Bharuch":"181.1","Bhavnagar":"270.4","Botad":"471.2","ChhotaUdepur":"270.8","Dahod":"355",
+               "DevbhumiDwarka":"781.2","Gandhinagar":"394.2","GirSomnath":"483.6","Jamnagar":"637.1","Junagadh":"648.9",
+               "Kachchh":"769.3","Kheda":"343.2","Mehsana":"447","Mahisagar":"388.7","Morbi":"568.7","Narmada":"545.9",
+               "Navsari":"100.8","Panchmahal":"341.7","Patan":"500.6","Porbandar":"726.5","Rajkot":"546.9","Sabarkantha":"471.4",
+               "Surat":"128","Surendranagar":"459.6","Tapi":"69.3","Vadodara":"259.6","Valsad":"110.9"},
+    
+            "DevbhumiDwarka":{"Ahmedabad":"397","Amreli":"291.2","Anand":"425.9","Aravalli":"751","Banaskantha":"513.3",
+               "Bharuch":"548.9","Bhavnagar":"357.3","Botad":"300.4","ChhotaUdepur":"568.2","Dahod":"657.2",
+               "Dangs":"729.5","Gandhinagar":"471.8","GirSomnath":"281.4","Jamnagar":"89.1","Junagadh":"205.6",
+               "Kachchh":"423.2","Kheda":"445.4","Mehsana":"438.2","Mahisagar":"562.4","Morbi":"195.3","Narmada":"991.5",
+               "Navsari":"639.1","Panchmahal":"563.4","Patan":"504.2","Porbandar":"704.5","Rajkot":"783.2","Sabarkantha":"511.8",
+               "Surat":"624.3","Surendranagar":"340.7","Tapi":"658.7","Vadodara":"464.6","Valsad":"693"},
+    
+            "Gandhinagar":{"Ahmedabad":"27.2","Amreli":"273.1","Anand":"97.6","Aravalli":"336.1","Banaskantha":"206",
+               "Bharuch":"212.4","Bhavnagar":"196.6","Botad":"173.9","ChhotaUdepur":"234.9","Dahod":"217.9",
+               "Dangs":"393","DevbhumiDwarka":"420","GirSomnath":"418.3","Jamnagar":"327.51","Junagadh":"339.3",
+               "Kachchh":"379.5","Kheda":"64.2","Mehsana":"65.3","Mahisagar":"116.6","Morbi":"241.4","Narmada":"552.2",
+               "Navsari":"302.6","Panchmahal":"138.3","Patan":"118.8","Porbandar":"416.9","Rajkot":"237.3","Sabarkantha":"90.5",
+               "Surat":"287.8","Surendranagar":"140.3","Tapi":"322.2","Vadodara":"131.8","Valsad":"356.5"},
+    
+            "GirSomnath":{"Ahmedabad":"408.7","Amreli":"128.9","Anand":"383.1","Aravalli":"746.2","Banaskantha":"602.5",
+               "Bharuch":"506.2","Bhavnagar":"222.9","Botad":"149.8","ChhotaUdepur":"525.4","Dahod":"562.4",
+               "Dangs":"480.7","DevbhumiDwarka":"281.4","Gandhinagar":"414.9","Jamnagar":"273.4","Junagadh":"106.9",
+               "Kachchh":"540","Kheda":"374.8","Mehsana":"461.7","Mahisagar":"492.2","Morbi":"305.8","Narmada":"896.8",
+               "Navsari":"390.3","Panchmahal":"468.6","Patan":"515.3","Porbandar":"175.4","Rajkot":"239.8","Sabarkantha":"507",
+               "Surat":"398","Surendranagar":"312.1","Tapi":"469.5","Vadodara":"421.8","Valsad":"444.2"},
+
+            "Jamnagar":{"Ahmedabad":"304.2","Amreli":"201.3","Anand":"333.1","Aravalli":"658.1","Banaskantha":"206",
+               "Bharuch":"456.1","Bhavnagar":"264.5","Botad":"207.5","ChhotaUdepur":"475.4","Dahod":"512.4",
+               "Dangs":"636.7","DevbhumiDwarka":"140.9","GirSomnath":"273.2","Gandhinagar":"326.9","Junagadh":"148.6",
+               "Kachchh":"330.4","Kheda":"300.6","Mehsana":"345.","Mahisagar":"116.6","Morbi":"102.5","Narmada":"846.7",
+               "Navsari":"546.3","Panchmahal":"417.9","Patan":"359.4","Porbandar":"131.2","Rajkot":"90.3","Sabarkantha":"419",
+               "Surat":"531.5","Surendranagar":"195.2","Tapi":"565.8","Vadodara":"371.8","Valsad":"600.2"},
+    
+            "Junagadh":{"Ahmedabad":"316.5","Amreli":"96.1","Anand":"489","Aravalli":"670.5","Banaskantha":"426.2",
+               "Bharuch":"468.6","Bhavnagar":"208.5","Botad":"174.6","ChhotaUdepur":"487.6","Dahod":"524.7",
+               "Dangs":"649","DevbhumiDwarka":"208.2","GirSomnath":"114.2","Gandhinagar":"339.2","Jamnagar":"148.8",
+               "Kachchh":"403.1","Kheda":"312.8","Mehsana":"386","Mahisagar":"429.8","Morbi":"168.9","Narmada":"859",
+               "Navsari":"558.5","Panchmahal":"430.2","Patan":"375.9","Porbandar":"104.9","Rajkot":"102.9","Sabarkantha":"431.2",
+               "Surat":"524.7","Surendranagar":"207.5","Tapi":"578.1","Vadodara":"384.1","Valsad":"612.6"},
+
+        "Kachchh":{"Ahmadabad":"365","Amreli":"374","Anand":"436","Aravalli":"580.6","Banaskantha":"275.3","Bharuch":"555",
+           "Bhavnagar":"438.9","Botad":"31","ChhotaUdepur":"574.3","Dahod":"571","Dangs":"735.6",
+           "DevbhumiDwarka":"441.5","Gandhinagar":"378.3","GirSomnath":"506.5","Jamnagar":"303.7","Junagadh":"369.8",
+           "Kheda":"396.8","Mehsana":"316","Mahisagar":"491.1","Morbi":"202.4","Narmada":"905.3","Navsari":"645.2",
+           "Panchmahal":"491.4","Patan":"287.1","Porbandar":"414.1","Rajkot":"265.5","Sabarkantha":"386.3","Surat":"630.4",
+           "Surendranagar":"285.7","Tapi":"724.4","Vadodara":"474.4","Valsad":"699.1"},
+    
+        "Kheda":{"Ahmadabad":"37.9","Amreli":"246.6","Anand":"39.6","Aravalli":"384.5","Banaskantha":"254.5","Bharuch":"162.5",
+           "Bhavnagar":"156.4","Botad":"147.4","ChhotaUdepur":"181.7","Dahod":"193","Dangs":"343.1",
+           "DevbhumiDwarka":"445.1","Gandhinagar":"64.7","GirSomnath":"378.1",
+           "Jamnagar":"301","Junagadh":"312.8",
+           "Kachchh":"396.8","Mehsana":"113.8","Mahisagar":"113.1","Morbi":"232","Narmada":"527.3","Navsari":"252.6",
+           "Panchmahal":"113.4","Patan":"167.3","Porbandar":"390.4","Rajkot":"210.8","Sabarkantha":"145.3","Surat":"237.9",
+           "Surendranagar":"123.5","Tapi":"331.8","Vadodara":"85.4","Valsad":"306.5"},
+    
+        "Mehsana":{"Ahmadabad":"76.9","Amreli":"321.6","Anand":"151.1","Aravalli":"326.6","Banaskantha":"141.8","Bharuch":"266",
+           "Bhavnagar":"245.1","Botad":"222.4","ChhotaUdepur":"285.2","Dahod":"271.4","Dangs":"446.5",
+           "DevbhumiDwarka":"439","Gandhinagar":"65","GirSomnath":"466.8",
+           "Jamnagar":"339.7","Junagadh":"352","Kachchh":"316","Kheda":"113.8",
+           "Mahisagar":"174.3","Morbi":"238.4","Narmada":"605.7","Navsari":"356.1",
+           "Panchmahal":"191.8","Patan":"54.3","Porbandar":"429.6","Rajkot":"250","Sabarkantha":"89","Surat":"341.3",
+           "Surendranagar":"144.1","Tapi":"375.7","Vadodara":"185.3","Valsad":"410"},
+    
+        "Mahisagar":{"Ahmadabad":"123","Amreli":"363.5","Anand":"111.5","Aravalli":"306.6","Banaskantha":"294.7","Bharuch":"209.6",
+           "Bhavnagar":"273.8","Botad":"264.3","ChhotaUdepur":"137.9","Dahod":"120.9","Dangs":"390.2",
+           "DevbhumiDwarka":"562","Gandhinagar":"116.7","GirSomnath":"495.5",
+           "Jamnagar":"417.9","Junagadh":"429.7",
+             "Kachchh":"491.1","Kheda":"113.1","Mehsana":"174.3",
+             "Morbi":"348.9","Narmada":"455.2","Navsari":"299.7",
+           "Panchmahal":"56.6","Patan":"215.2","Porbandar":"507.3","Rajkot":"327.7","Sabarkantha":"129.7","Surat":"285",
+           "Surendranagar":"240.4","Tapi":"378.9","Vadodara":"132.9","Valsad":"353.6"},
+    
+        "Morbi":{"Ahmadabad":"221.8","Amreli":"173.5","Anand":"263.8","Aravalli":"572.2","Banaskantha":"274.1","Bharuch":"386.8",
+           "Bhavnagar":"236.7","Botad":"138.3","ChhotaUdepur":"406.1","Dahod":"443.1","Dangs":"567.4",
+           "DevbhumiDwarka":"247","Gandhinagar":"240.9","GirSomnath":"305.7",
+           "Jamnagar":"103","Junagadh":"169",
+           "Kachchh":"491.1","Kheda":"113.1","Mehsana":"174.3","Mahisagar":"348.9",
+           "Narmada":"761.4","Navsari":"477",
+           "Panchmahal":"348.6","Patan":"258.7","Porbandar":"219.6","Rajkot":"65.5","Sabarkantha":"318.1","Surat":"462.2",
+           "Surendranagar":"141.7","Tapi":"496.6","Vadodara":"302.5","Valsad":"530.9"},
+    
+        "Narmada":{"Ahmadabad":"199.9","Amreli":"389.1","Anand":"139","Aravalli":"538.2","Banaskantha":"362","Bharuch":"74",
+           "Bhavnagar":"295.8","Botad":"298.8","ChhotaUdepur":"97.1","Dahod":"181.3","Dangs":"177.7",
+           "DevbhumiDwarka":"557.1","Gandhinagar":"221.7","GirSomnath":"517.5",
+           "Jamnagar":"464.6","Junagadh":"476.4",
+           "Kachchh":"596.8","Kheda":"10.7","Mehsana":"274.5","Mahisagar":"196.1","Morbi":"365.6",
+           "Navsari":"152.2",
+           "Panchmahal":"144.7","Patan":"328.1","Porbandar":"554","Rajkot":"374.4","Sabarkantha":"299","Surat":"137.4",
+           "Surendranagar":"287.1","Tapi":"118.5","Vadodara":"92.1","Valsad":"206.1"},
+    
+        "Navsari":{"Ahmadabad":"281.8","Amreli":"471.1","Anand":"220.9","Aravalli":"620.2","Banaskantha":"497.3","Bharuch":"90.6",
+           "Bhavnagar":"179.9","Botad":"38.07","ChhotaUdepur":"245.3","Dahod":"317.5","Dangs":"101.1",
+           "DevbhumiDwarka":"690.7","Gandhinagar":"303.7","GirSomnath":"393.1",
+           "Jamnagar":"546.6","Junagadh":"558.4",
+           "Kachchh":"645.2","Kheda":"252.6","Mehsana":"356.1","Mahisagar":"299.7","Morbi":"477","Narmada":"152.2",
+           
+           "Panchmahal":"251.2","Patan":"410","Porbandar":"635.9","Rajkot":"456.4","Sabarkantha":"380.9","Surat":"40.3",
+           "Surendranagar":"369.1","Tapi":"81.2","Vadodara":"169.1","Valsad":"55.9"},
+    
+        "Panchmahal":{"Ahmadabad":"125","Amreli":"365.5","Anand":"84","Aravalli":"354.3","Banaskantha":"333.6","Bharuch":"162.9",
+           "Bhavnagar":"265","Botad":"266.3","ChhotaUdepur":"101.2","Dahod":"72.6","Dangs":"343.5",
+           "DevbhumiDwarka":"512.4","Gandhinagar":"140.1","GirSomnath":"473.5",
+           "Jamnagar":"419.9","Junagadh":"431.7",
+           "Kachchh":"491.4","Kheda":"113.4","Mehsana":"191.8","Mahisagar":"56.6","Morbi":"348.6","Narmada":"144.7",
+           "Navsari":"251.2","Patan":"246.4","Porbandar":"509.3","Rajkot":"329.7","Sabarkantha":"177.4","Surat":"238.3",
+           "Surendranagar":"242.4","Tapi":"332.3","Vadodara":"86.2","Valsad":"307"}, 
+    
+        "Patan":{"Ahmadabad":"130","Amreli":"335.6","Anand":"204.2","Aravalli":"316.3","Banaskantha":"84.2","Bharuch":"319.1",
+           "Bhavnagar":"271.8","Botad":"243","ChhotaUdepur":"338.3","Dahod":"324.5","Dangs":"499.6",
+           "DevbhumiDwarka":"492.9","Gandhinagar":"118.1","GirSomnath":"501.7",
+           "Jamnagar":"348.8","Junagadh":"365",
+           "Kachchh":"287.1","Kheda":"167.3","Mehsana":"54.3","Mahisagar":"215.2","Morbi":"258.7","Narmada":"328.1",
+           "Navsari":"410","Panchmahal":"246.4","Porbandar":"442.6","Rajkot":"263","Sabarkantha":"99","Surat":"394.4",
+           "Surendranagar":"159.3","Tapi":"488.4","Vadodara":"238.4","Valsad":"463.1"},
+    
+        "Porbandar":{"Ahmadabad":"394","Amreli":"190.1","Anand":"422.9","Aravalli":"748","Banaskantha":"503.7","Bharuch":"545.9",
+           "Bhavnagar":"289.6","Botad":"252","ChhotaUdepur":"565.2","Dahod":"602.2","Dangs":"726.5",
+           "DevbhumiDwarka":"104.1","Gandhinagar":"416.8","GirSomnath":"175.1",
+           "Jamnagar":"121.7","Junagadh":"104.5",
+           "Kachchh":"414.1","Kheda":"390.4","Mehsana":"429.6","Mahisagar":"507.3","Morbi":"219.6","Narmada":"554",
+           "Navsari":"635.9","Panchmahal":"509.3","Patan":"442.6","Rajkot":"180.4","Sabarkantha":"508.8","Surat":"621.3",
+           "Surendranagar":"285.1","Tapi":"715.3","Vadodara":"461.6","Valsad":"689.9"},
+    
+        "Rajkot":{"Ahmadabad":"214.5","Amreli":"111.1","Anand":"243.4","Aravalli":"568.5","Banaskantha":"324.2","Bharuch":"366.4",
+           "Bhavnagar":"174.3","Botad":"122.9","ChhotaUdepur":"385.6","Dahod":"422.7","Dangs":"547",
+           "DevbhumiDwarka":"183.2","Gandhinagar":"237.2","GirSomnath":"239.6",
+           "Jamnagar":"90.8","Junagadh":"102.9",
+           "Kachchh":"265.5","Kheda":"210.8","Mehsana":"250","Mahisagar":"327.7","Morbi":"65.5","Narmada":"374.4",
+           "Navsari":"456.4","Panchmahal":"329.7","Patan":"263","Porbandar":"180.4","Sabarkantha":"329.2","Surat":"441.8",
+           "Surendranagar":"105.5","Tapi":"535.7","Vadodara":"282.1","Valsad":"510.4"},
+
+        "Sabarkantha":{"Ahmadabad":"111.5","Amreli":"364","Anand":"174.9","Aravalli":"271.9","Banaskantha":"178.6","Bharuch":"289.8",
+           "Bhavnagar":"287.5","Botad":"266","ChhotaUdepur":"258.8","Dahod":"241.8","Dangs":"470.4",
+           "DevbhumiDwarka":"562.5","Gandhinagar":"90.6","GirSomnath":"509.2",
+           "Jamnagar":"418.4","Junagadh":"430.2",
+           "Kachchh":"386.3","Kheda":"145.3","Mehsana":"89","Mahisagar":"129.7","Morbi":"318.1","Narmada":"299",
+           "Navsari":"380.9","Panchmahal":"177.4","Patan":"99","Porbandar":"508.8","Rajkot":"329.2","Surat":"365.2",
+           "Surendranagar":"230.2","Tapi":"459.1","Vadodara":"209.1","Valsad":"433.8"},
+
+        "Surat":{"Ahmadabad":"267.2","Amreli":"263.4","Anand":"206.2","Aravalli":"605.5","Banaskantha":"482.6","Bharuch":"75.9",
+           "Bhavnagar":"148.1","Botad":"366","ChhotaUdepur":"230.6","Dahod":"302.8","Dangs":"129.2",
+           "DevbhumiDwarka":"676","Gandhinagar":"289","GirSomnath":"361.3",
+           "Jamnagar":"531.9","Junagadh":"543.7","Kachchh":"630.4","Kheda":"237.9","Mehsana":"341.3","Mahisagar":"285","Morbi":"462.2","Narmada":"137.4",
+           "Navsari":"40.3","Panchmahal":"238.3","Patan":"394.4","Porbandar":"621.3","Rajkot":"441.8","Sabarkantha":"365.2",
+           "Surendranagar":"354.4","Tapi":"104.2","Vadodara":"154.4","Valsad":"92.7"},
+
+        "Surendranagar":{"Ahmadabad":"127.1","Amreli":"178.1","Anand":"155.9","Aravalli":"481.1","Banaskantha":"220.6","Bharuch":"279",
+           "Bhavnagar":"153.2","Botad":"85.5","ChhotaUdepur":"298.2","Dahod":"335.2","Dangs":"459.5",
+           "DevbhumiDwarka":"339.8","Gandhinagar":"149.8","GirSomnath":"344.3",
+           "Jamnagar":"195.8","Junagadh":"207.5",
+           "Kachchh":"285.7","Kheda":"123.5","Mehsana":"144.1","Mahisagar":"240.4","Morbi":"141.7","Narmada":"137.4",
+           "Navsari":"369.1","Panchmahal":"242.4","Patan":"159.3","Porbandar":"285.1","Rajkot":"105.5","Sabarkantha":"230.2",
+           "Surat":"354.4","Tapi":"448.3","Vadodara":"194.6","Valsad":"423"},
+
+        "Tapi":{"Ahmadabad":"293.2","Amreli":"482.5","Anand":"232.3","Aravalli":"631.6","Banaskantha":"508.6","Bharuch":"109.6",
+           "Bhavnagar":"246.6","Botad":"392.1","ChhotaUdepur":"211.8","Dahod":"296.1","Dangs":"69.4",
+           "DevbhumiDwarka":"702","Gandhinagar":"315.1","GirSomnath":"469.3",
+           "Jamnagar":"558","Junagadh":"634.6",
+           "Kachchh":"724.4","Kheda":"331.8","Mehsana":"375.7","Mahisagar":"378.9","Morbi":"496.6","Narmada":"118.5",
+           "Navsari":"81.2","Panchmahal":"332.3","Patan":"488.4","Porbandar":"715.3","Rajkot":"535.7","Sabarkantha":"459.1",
+           "Surat":"104.2","Surendranagar":"448.3","Vadodara":"180.5","Valsad":"154.5"},
+
+        "Vadodara":{"Ahmadabad":"110.9","Amreli":"296.7","Anand":"46.5","Aravalli":"449.3","Banaskantha":"326.3","Bharuch":"78.7",
+           "Bhavnagar":"203.4","Botad":"206.3","ChhotaUdepur":"106.6","Dahod":"150.6","Dangs":"259.3",
+           "DevbhumiDwarka":"516.3","Gandhinagar":"132.8","GirSomnath":"425.1",
+           "Jamnagar":"372.2","Junagadh":"384",
+            "Kachchh":"474.4","Kheda":"85.4","Mehsana":"185.3","Mahisagar":"132.9","Morbi":"302.5","Narmada":"92.1",
+           "Navsari":"169.1","Panchmahal":"86.2","Patan":"238.4","Porbandar":"461.6","Rajkot":"282.1","Sabarkantha":"209.1",
+           "Surat":"154.4","Surendranagar":"194.6","Tapi":"180.5","Valsad":"222.8"},
+
+        "Valsad":{"Ahmadabad":"335.8","Amreli":"525","Anand":"274.8","Aravalli":"674.1","Banaskantha":"551.2","Bharuch":"144.5",
+           "Bhavnagar":"233.8","Botad":"434.6","ChhotaUdepur":"299.2","Dahod":"371.4","Dangs":"111.2",
+           "DevbhumiDwarka":"692.9","Gandhinagar":"357.6","GirSomnath":"447",
+           "Jamnagar":"600.5","Junagadh":"612.3",
+           "Kachchh":"699.1","Kheda":"306.5","Mehsana":"410","Mahisagar":"353.6","Morbi":"530.9","Narmada":"206.1",
+           "Navsari":"55.9","Panchmahal":"307","Patan":"463.1","Porbandar":"689.9","Rajkot":"180.4","Sabarkantha":"433.8",
+           "Surat":"92.7","Surendranagar":"423","Tapi":"154.5","Vadodara":"222.8"}
+            // Add more cities and distances as needed
+        };
+
+        function dijkstra(graph, start, end) {
+            const distances = {};
+            const predecessors = {};
+            const unvisitedNodes = Object.keys(graph);
+
+            // Initialize distances with Infinity, except for the start node
+            unvisitedNodes.forEach(node => {
+                distances[node] = Infinity;
+            });
+            distances[start] = 0;
+
+            while (unvisitedNodes.length > 0) {
+                const currentNode = minDistanceNode(distances, unvisitedNodes);
+                unvisitedNodes.splice(unvisitedNodes.indexOf(currentNode), 1);
+
+                for (const neighbor in graph[currentNode]) {
+                    const currentDistance = distances[currentNode] + parseInt(graph[currentNode][neighbor]);
+
+                    if (currentDistance < distances[neighbor]) {
+                        distances[neighbor] = currentDistance;
+                        predecessors[neighbor] = currentNode;
+                    }
+                }
+            }
+
+            const path = getPath(predecessors, end);
+            const distance = distances[end];
+
+            return { path, distance };
+        }
+
+        function minDistanceNode(distances, unvisitedNodes) {
+            return unvisitedNodes.reduce((minNode, node) => (
+                distances[node] < distances[minNode] ? node : minNode
+            ), unvisitedNodes[0]);
+        }
+
+        function getPath(predecessors, end) {
+            const path = [];
+            let currentNode = end;
+
+            while (predecessors[currentNode] !== undefined) {
+                path.unshift(currentNode);
+                currentNode = predecessors[currentNode];
+            }
+
+            return path;
+        }
+
+        function findShortestPath() {
+            const startCity = document.getElementById('startCity').value;
+            const endCity = document.getElementById('endCity').value;
+
+            const result = dijkstra(cityGraph, startCity, endCity);
+
+            if (startCity === endCity) {
+                alert("Please select different Start and End City");
+            } else {
+                const pathText = result.path.join(' -> ');
+                const distanceText = `<b>Total Distance:</b> ${result.distance} kilometers`;
+
+                document.getElementById('result').innerHTML = `<p class='Ans'>Shortest Path From ${startCity} To ${endCity}:</p><br><br>${startCity} -> ${pathText}<br><br>${distanceText}`;
+            }
+        }
+
+        
+    </script>
+</body>
+</html>
